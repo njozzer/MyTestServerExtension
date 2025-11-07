@@ -1,0 +1,11 @@
+.vs/
+.git/
+MyTestPlatformExtension/bin/*
+MyTestPlatformExtension/obj/*
+MyTestServerExtension/bin/*
+MyTestServerExtension/obj/*
+TemplateDVE/IntroductionToSDK.App/bin/*
+TemplateDVE/IntroductionToSDK.App/obj/*
+TemplateWebExtension/node_modules/*
+TemplateWebExtension/obj/*
+TemplateWebExtension/output/*
