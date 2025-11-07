@@ -1,4 +1,4 @@
-MyTestPlatformExtension - StorageServerExtension \n
-MyTestServerExtension - WebClientExtension \n
-TemplateDVE - console app \n
+MyTestPlatformExtension - StorageServerExtension;
+MyTestServerExtension - WebClientExtension;
+TemplateDVE - console app;
 TemplateWebExtension - WebClient
