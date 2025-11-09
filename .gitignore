@@ -9,3 +9,5 @@ TemplateDVE/IntroductionToSDK.App/obj/*
 TemplateWebExtension/node_modules/*
 TemplateWebExtension/obj/*
 TemplateWebExtension/output/*
+DBTest/bin/*
+DBTest/obj/*

@@ -1,0 +1,92 @@
+﻿--Get Data for member on trip for StorageServerExtension, HW 8--
+create or replace function "getTripData"(val_employeeid uuid)
+	returns table(t1 bigint,t2 timestamp, t3 text,t4 text,t5 text)
+	LANGUAGE plpgsql
+	as $$
+	begin
+		return query
+			select row_number() over (order by docMI."State" desc) as row_num, 
+				docMI."dateFrom",
+				cities."Name" , docMI.reason, states."DefaultName"  from
+				public."dvtable_{30eb9b87-822b-4753-9a50-a1825dca1b74}" docMI
+				join (select "RowID", "DefaultName"  from public."dvtable_{521b4477-dd10-4f57-a453-09c70adb7799}") states
+				on (states."RowID"  = docMI."State") 
+				join (select "RowID", "Name" from public."dvtable_{1b1a44fb-1fb1-4876-83aa-95ad38907e24}") cities
+				on (cities."RowID"  = docMI."cityRef")
+				where 
+					docMI."Author" = val_employeeid
+				
+		;
+	end;
+	$$ ;
+
+
+	-- Get Unit for Card , HW 9--
+create view search_card_unit as (
+select docMI."InstanceID" ,  sr."Name"    from
+				public."dvtable_{30eb9b87-822b-4753-9a50-a1825dca1b74}" docMI
+				join "dvtable_{dbc8ae9d-c1d2-4d5e-978b-339d22b32482}" users
+				on (docMI."Author" = users."RowID")
+				join "dvtable_{7473f07f-11ed-4762-9f1e-7ff10808ddd1}" units
+				on (users."ParentRowID" = units."RowID")
+				join (select sr.leaf_node_id, sr."Name" from search_root sr) sr
+				on (sr.leaf_node_id = units."RowID")
+	)
+	
+	-- Get Root Unit , HW 9--
+create view search_root as
+WITH RECURSIVE find_root AS (
+    select
+    	a."Name",
+        a."RowID" as RowID,
+        a."ParentTreeRowID" as ParentTreeRowID,
+        a."RowID" AS current_node_id, 
+        a."RowID" AS root_id
+    FROM
+        "dvtable_{7473f07f-11ed-4762-9f1e-7ff10808ddd1}" a
+    WHERE
+        NOT EXISTS (SELECT 1 FROM "dvtable_{7473f07f-11ed-4762-9f1e-7ff10808ddd1}" b WHERE b."ParentTreeRowID"  = a."RowID" ) 
+    UNION ALL
+    select
+    	mt."Name",
+        fr.RowID,
+        mt."ParentTreeRowID",
+        mt."RowID" AS current_node_id,        
+        CASE
+            WHEN  mt."ParentTreeRowID" = '00000000-0000-0000-0000-000000000000' THEN mt."RowID"  
+            ELSE fr.root_id 
+        END AS root_id
+    FROM
+        "dvtable_{7473f07f-11ed-4762-9f1e-7ff10808ddd1}" mt
+    JOIN
+        find_root fr ON mt."RowID"  = fr.ParentTreeRowID
+)
+SELECT
+    RowID AS leaf_node_id,
+    root_id,"Name"
+FROM
+    find_root
+WHERE
+    ParentTreeRowID = '00000000-0000-0000-0000-000000000000'
+
+
+
+
+
+--CREATE SCRIPTS--
+
+CREATE TABLE user_cities(
+	id SERIAL,
+	city1 bool not null,
+	city2 bool not null,
+	city3 bool not null,
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE user_data(
+	id SERIAL,
+	userid uuid not null,
+	citiesid int not null,
+	PRIMARY KEY(id),
+	FOREIGN KEY(citiesid) REFERENCES user_cities(id)
+);
