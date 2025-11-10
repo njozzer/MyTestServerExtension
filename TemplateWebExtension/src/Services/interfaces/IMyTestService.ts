@@ -10,6 +10,7 @@ export interface IMyTestService{
     ChangeMoneyData(model: IMyTestMemberRequestModel): Promise<IMyTestModel>;
     ChangeDayCount(model: IMyTestDateRequsetModel): Promise<IMyTestModel>;
     GetTripData(model: IMyTestRequestModel): Promise<IMyTestModel>;
+    GetTestData(model: IMyTestRequestModel): Promise<IMyTestModel>;
 }
 
 export type $MyTestService = { activityPlanService: IMyTestService };

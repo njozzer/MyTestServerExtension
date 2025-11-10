@@ -68,5 +68,16 @@ namespace MyTestServerExtension.Controllers
             
             return CommonResponse.CreateSuccess(res);
         }
+
+        [HttpPost]
+        public CommonResponse<MyTestModel> GetTestData([FromBody] MyTestDateRequsetModel model)
+        {
+            var sessionContext = contextProvider.GetOrCreateCurrentSessionContext();
+            var res = testService.GetTestData(sessionContext, model.DocumentId);
+
+            return CommonResponse.CreateSuccess(res);
+        }
+
+        
     }
 }

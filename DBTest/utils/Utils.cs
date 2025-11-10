@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
+
+using System.DirectoryServices;
 
 namespace DBTest.utils
 {
@@ -42,36 +45,54 @@ namespace DBTest.utils
                 
             }
         }
-        public void createUserData(string userID,uint citiesid, DB db)
+        public void createUserData(string userID,string cityId, DB db)
         {
 
-            var tuple_ = db.ifUserDataNotExists(userID,citiesid);
+            var tuple_ = db.ifUserDataNotExists(userID, cityId);
             if (!tuple_.Item1)
             {
-                db.InsertUserCities(userID, citiesid);
+                var tuple_2 = db.getUserCityId(cityId);
+                db.InsertUserCities(userID, tuple_2.Item2);
 
             }
         }
-        public uint getCitiesID(string[] citiesArr)
+        
+        public static void CreateADUser(string domainController, string containerOU, string username, string password, string firstName, string lastName)
         {
-            uint id = 1;
-            var i = 2;
-            foreach (var c in citiesArr)
+            
+            try
             {
-               
-                var tmp = c.Split(":")[1];
-                
-                if (tmp =="да")
+                // Connect to the specified OU in Active Directory
+                using (DirectoryEntry ouEntry = new DirectoryEntry($"LDAP://{domainController}/{containerOU}"))
                 {
-                    id += (uint)1 << i;
-                }
-                else
-                {
+                    // Create a new user entry
+                    using (DirectoryEntry newUser = ouEntry.Children.Add($"CN={firstName} {lastName}", "user"))
+                    {
+                        // Set mandatory properties
+                        newUser.Properties["sAMAccountName"].Value = username;
+                        newUser.Properties["givenName"].Value = firstName;
+                        newUser.Properties["sn"].Value = lastName;
+                        newUser.Properties["displayName"].Value = $"{firstName} {lastName}";
+                        newUser.Properties["userPrincipalName"].Value = $"{username}@{domainController.Split('.')[0]}.local"; // Adjust domain part as needed
 
+                        // Commit changes to create the user object
+                        newUser.CommitChanges();
+
+                        // Set the password (must be done after committing the user object)
+                        newUser.Invoke("SetPassword", new object[] { password });
+
+                        // Enable the user account
+                        newUser.Properties["userAccountControl"].Value = 0x200; // ADS_UF_NORMAL_ACCOUNT
+                        newUser.CommitChanges();
+
+                        Console.WriteLine($"User '{username}' created successfully in Active Directory.");
+                    }
                 }
-                i--;
             }
-            return id;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating user: {ex.Message}");
+            }
         }
         public void doAction(string line, DB db) {
             string? unitID;
@@ -95,10 +116,31 @@ namespace DBTest.utils
             createUser(nameArr, unitID, positionID, db);
             userID = db.getUserRowID(nameArr, unitID, positionID).Item2;
             Console.WriteLine(userID);
-            createUserData(userID, getCitiesID(citiesArr), db);
+            foreach(var city in citiesArr)
+            {
+                var cityData = city.Split(":");
+                if (cityData[1] == "да")
+                {
+                    var cityId = db.getCityId(cityData[0]);
+                    Console.WriteLine(cityId.Item2);
+                    createUserData(userID, cityId.Item2, db);
+                }
+            }
+            
+
+        }
+        public void test() {
+            string domainController = "engineer.school.local";
+            string containerOU = "OU=Users,DC=engineer.school,DC=local";
+            string username = "nedopekin_ey";
+            string password = "P@ssw0rd";
+            string firstName = "New";
+            string lastName = "User";
+            CreateADUser(domainController,containerOU,username,password,firstName,lastName);
         }
         public void readFile()
         {
+           
             var db = new DB();
             var reader = new StreamReader(path + fileName);
             string? line;

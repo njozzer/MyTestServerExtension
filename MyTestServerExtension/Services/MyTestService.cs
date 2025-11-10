@@ -80,6 +80,7 @@ namespace MyTestServerExtension.Services
         public void InitMyCard(SessionContext sessionContext, Guid cardId)
         {
             var card = sessionContext.ObjectContext.GetObject<Document>(cardId);
+            
             var author = card.MainInfo.Author;
             var manager = author.Manager;
             var staffSvc = sessionContext.ObjectContext.GetService<IStaffService>();
@@ -109,9 +110,17 @@ namespace MyTestServerExtension.Services
 
             sessionContext.ObjectContext.SaveObject(card);
         }
-        public void MyTest(SessionContext sessionContext, Guid cardId)
-        {
-
+        public MyTestModel GetTestData(SessionContext sessionContext, Guid cardId) {
+            var card = sessionContext.ObjectContext.GetObject<Document>(cardId);
+            ExtensionManager extensionManager = sessionContext.Session.ExtensionManager;
+            ExtensionMethod getRole = extensionManager.GetExtensionMethod("MyExtension", "GetRole");
+            var cityGUID = Guid.Parse(card.MainInfo["cityRef"].ToString());
+            getRole.Parameters.AddNew("employeeId", ParameterValueType.Guid, sessionContext.UserInfo.EmployeeId);
+            getRole.Parameters.AddNew("cityId", ParameterValueType.Guid, cityGUID);
+            getRole.Parameters.AddNew("cardId", ParameterValueType.Guid, cardId);
+            var res = (string)getRole.Execute() + "";
+            
+            return new MyTestModel { content =  res };
         }
         public MyTestModel GetTripData(SessionContext sessionContext, Guid cardId) {
             ExtensionManager extensionManager = sessionContext.Session.ExtensionManager;

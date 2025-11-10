@@ -94,7 +94,7 @@ export function ddActivity_cityRef_onChange(sender) {
 export function ddActivity_testButton_Onclick(sender) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            new MyTestLogic().getTripData(sender);
+            new MyTestLogic().performAction(sender.layout);
             return [2 /*return*/];
         });
     });

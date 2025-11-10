@@ -19,7 +19,7 @@ namespace MyTestServerExtension.CardLifeCycle
         public TestCardLifeCycle(ICardLifeCycleEx baseLifeCycle,IMyTestService myTestService) { 
             this.baseLifeCycle = baseLifeCycle;
             this.myTestService = myTestService;
-
+            
         }  
         protected ICardLifeCycleEx baseLifeCycle {  get;  }
         protected IMyTestService myTestService { get; }
@@ -27,6 +27,7 @@ namespace MyTestServerExtension.CardLifeCycle
 
         public Guid Create(SessionContext sessionContext, CardCreateLifeCycleOptions options)
         {
+            
             var cardId = baseLifeCycle.Create(sessionContext, options);
             if (options.CardKindId == Const.cardId) {
                 myTestService.InitMyCard(sessionContext,cardId);

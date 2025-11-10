@@ -72,6 +72,16 @@ var MyTestService = /** @class */ (function (_super) {
             options: { isShowOverlay: true }
         });
     };
+    MyTestService.prototype.GetTestData = function (model) {
+        return _super.prototype.doRequest.call(this, {
+            controller: this.controllerName,
+            action: 'GetTestData',
+            isApi: true,
+            method: HttpMethods.Post,
+            data: { model: model },
+            options: { isShowOverlay: true }
+        });
+    };
     return MyTestService;
 }(ControllerBase));
 export { MyTestService };

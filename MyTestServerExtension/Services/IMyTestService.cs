@@ -18,5 +18,6 @@ namespace MyTestServerExtension.Services
         public void InitMyCard(SessionContext sessionContext, Guid cardId);
 
         public MyTestModel GetTripData(SessionContext sessionContext, Guid cardId);
+        public MyTestModel GetTestData(SessionContext sessionContext, Guid cardId);
     }
 }

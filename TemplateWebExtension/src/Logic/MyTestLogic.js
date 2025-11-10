@@ -212,11 +212,12 @@ var MyTestLogic = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, layout.getService($MyTestService).GetName({
+                    case 0: return [4 /*yield*/, layout.getService($MyTestService).GetTestData({
                             documentId: layout.cardInfo.id
                         })];
                     case 1:
                         response = _a.sent();
+                        console.log(response.content);
                         return [2 /*return*/];
                 }
             });

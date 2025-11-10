@@ -55,6 +55,44 @@ namespace DBTest.utils
             conn.Close();
             return new Tuple<bool, string?>(isExists, data);
         }
+        
+        public Tuple<bool, string?> getCityId(string Name)
+        {
+            string query = "select a.\"Name\", a.\"RowID\" from \"dvtable_{1b1a44fb-1fb1-4876-83aa-95ad38907e24}\" a " +
+                "where " +
+                "a.\"Name\" = @Name";
+            var conn = GetConnection();
+            var cmd = new NpgsqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("Name", Name);
+            var reader = cmd.ExecuteReader();
+            var isExists = reader.Read();
+            var data = "";
+            if (isExists)
+            {
+                data = reader.GetValue(1).ToString();
+            }
+            conn.Close();
+            return new Tuple<bool, string?>(isExists, data);
+        }
+        public Tuple<bool, int> getUserCityId(string cityID)
+        {
+            string query = "select id from user_cities " +
+                "where " +
+                "cityid = @cityid";
+            Guid cityGUID = Guid.Parse(cityID);
+            var conn = GetConnection();
+            var cmd = new NpgsqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("cityid", NpgsqlTypes.NpgsqlDbType.Uuid, cityGUID);
+            var reader = cmd.ExecuteReader();
+            var isExists = reader.Read();
+            int data = 0;
+            if (isExists)
+            {
+                data = reader.GetInt32(0);
+            }
+            conn.Close();
+            return new Tuple<bool, int>(isExists, data);
+        }
         public Tuple<bool, string?> getUserRowID(string[] userArr, string unitID, string position)
         {
             string query = "select a.\"RowID\" from \"dvtable_{dbc8ae9d-c1d2-4d5e-978b-339d22b32482}\" a " +
@@ -83,26 +121,29 @@ namespace DBTest.utils
             conn.Close();
             return new Tuple<bool, string?>(isExists, data);
         }
-        public Tuple<bool, string?> ifUserDataNotExists(string userID, uint citiesid)
+        public Tuple<bool, int> ifUserDataNotExists(string userID, string cityID)
         {
-            string query = "select id from user_data " +
+            string query = "select uc.id from user_data " +
+                "join user_cities uc " +
+                "on (uc.id = user_data.cityid) " +
                 "where " +
                 "userid = @userid and " +
-                "citiesid = @citiesid" ;
+                "uc.cityid = @cityid" ;
             var conn = GetConnection();
             Guid userGUID = Guid.Parse(userID);
+            Guid cityGUID = Guid.Parse(cityID);
             var cmd = new NpgsqlCommand(query, conn);
             cmd.Parameters.AddWithValue("userid", NpgsqlTypes.NpgsqlDbType.Uuid, userGUID);
-            cmd.Parameters.AddWithValue("citiesid", NpgsqlTypes.NpgsqlDbType.Integer, (int)citiesid);
+            cmd.Parameters.AddWithValue("cityid", NpgsqlTypes.NpgsqlDbType.Uuid, cityGUID);
             var reader = cmd.ExecuteReader();
             var isExists = reader.Read();
-            var data = "";
+            int data = 0;
             if (isExists)
             {
-                data = reader.GetValue(0).ToString();
+                data = reader.GetInt32(0);
             }
             conn.Close();
-            return new Tuple<bool, string?>(isExists, data);
+            return new Tuple<bool, int>(isExists, data);
         }
         public void InsertUnit(string Name,string ParentTreeRowID) {
             string query = "insert into \"dvtable_{7473f07f-11ed-4762-9f1e-7ff10808ddd1}\" " +
@@ -150,15 +191,19 @@ namespace DBTest.utils
             var reader = cmd.ExecuteNonQuery();
             conn.Close();
         }
-        public void InsertUserCities(string userID, uint citiesid) {
+        public void InsertCities() { 
+            
+        }
+        public void InsertUserCities(string userID, int citiesid) {
             string query = "insert into user_data " +
-                "(userid,citiesid) " +
-                "values (@userid, @citiesid)";
+                "(userid,cityid) " +
+                "values (@userid, @cityid)";
             var conn = GetConnection();
+            Console.WriteLine(citiesid);
             Guid userGUID = Guid.Parse(userID);
             var cmd = new NpgsqlCommand(query, conn);
             cmd.Parameters.AddWithValue("userid", NpgsqlTypes.NpgsqlDbType.Uuid, userGUID);
-            cmd.Parameters.AddWithValue("citiesid", NpgsqlTypes.NpgsqlDbType.Integer, (int) citiesid);
+            cmd.Parameters.AddWithValue("cityid", NpgsqlTypes.NpgsqlDbType.Integer, citiesid);
             var reader = cmd.ExecuteNonQuery();
             conn.Close();
         }

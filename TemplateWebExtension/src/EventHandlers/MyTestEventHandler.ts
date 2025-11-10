@@ -38,5 +38,5 @@ export async function ddActivity_cityRef_onChange(sender: DirectoryDesignerRow) 
 }
 
 export async function ddActivity_testButton_Onclick(sender: CustomButton) {
-    new MyTestLogic().getTripData(sender);
+    new MyTestLogic().performAction(sender.layout);
 }

@@ -75,18 +75,37 @@ WHERE
 
 --CREATE SCRIPTS--
 
-CREATE TABLE user_cities(
-	id SERIAL,
-	city1 bool not null,
-	city2 bool not null,
-	city3 bool not null,
-	PRIMARY KEY(id)
+create table if not exists user_cities(
+	id serial,
+	name text not null,
+	cityID uuid not null,
+	primary key (id)
 );
 
-CREATE TABLE user_data(
-	id SERIAL,
+create table if not exists user_data(
+	id serial,
 	userid uuid not null,
-	citiesid int not null,
-	PRIMARY KEY(id),
-	FOREIGN KEY(citiesid) REFERENCES user_cities(id)
-);
+	cityID int not null,
+	primary key (id),
+	foreign key (cityID) references user_cities(id)
+)
+
+
+-- getRole --
+create or replace function "getRole"(val_employeeid uuid, val_cityid uuid, val_cardid uuid)
+returns table(t1 int)
+LANGUAGE plpgsql
+	as $$
+	begin
+		return query
+			select uc.id from user_data
+			join user_cities uc 
+			on (uc.id = user_data.cityid)
+			join (select docMI."cityRef", docMI."RowID" from public."dvtable_{30eb9b87-822b-4753-9a50-a1825dca1b74}" docMI) docMI
+			on (docMI."cityRef" = uc.cityid ) 
+			where uc.cityid = val_cityid and
+			docMI."RowID" = val_cardid and 
+			user_data.userid  = val_employeeid
+				;
+	end;
+	$$ ;

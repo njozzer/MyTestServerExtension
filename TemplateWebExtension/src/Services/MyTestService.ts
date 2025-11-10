@@ -65,5 +65,15 @@ export class MyTestService extends ControllerBase implements IMyTestService{
             options: { isShowOverlay: true }
         });
     }
+    GetTestData(model: IMyTestRequestModel): Promise<IMyTestModel> {
+        return super.doRequest({
+            controller: this.controllerName,
+            action: 'GetTestData',
+            isApi: true,
+            method: HttpMethods.Post,
+            data: { model },
+            options: { isShowOverlay: true }
+        });
+    }
 }
 

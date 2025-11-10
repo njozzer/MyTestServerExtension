@@ -67,5 +67,27 @@ namespace MyTestPlatformExtension
             }  
             
         }
+        [ExtensionMethod]
+        public string GetRole(Guid employeeId, Guid cityId, Guid cardId) {
+            DbRequest.DataLayer.Connection.CreateCommand();
+            using (var cmd = base.DbRequest.DataLayer.Connection.CreateCommand("getRole", System.Data.CommandType.StoredProcedure))
+            {
+                cmd.AddParameter("EmployeeId", System.Data.DbType.Guid, System.Data.ParameterDirection.Input, 0, employeeId);
+                cmd.AddParameter("CityId", System.Data.DbType.Guid, System.Data.ParameterDirection.Input, 0, cityId);
+                cmd.AddParameter("CardId", System.Data.DbType.Guid, System.Data.ParameterDirection.Input, 0, cardId);
+                var dbr = cmd.ExecuteReader();
+                var res = "{\"isWatcher\":";
+                if (dbr.Read())
+                {
+                    res += "\"true\"";
+                }
+                else {
+                    res += "\"false\"";
+                }
+                res += "}";
+                return res;
+            }
+                
+        }
     }
 }

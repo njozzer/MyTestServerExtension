@@ -111,6 +111,7 @@ export class MyTestLogic{
        
     }
     async getTripData(sender: CustomButton) {
+        
         var layout = sender.layout;
         var authorId = layout.controls.get<StaffDirectoryItems>("previewRegistrar");
         const response = await layout.getService($MyTestService).GetTripData({
@@ -120,10 +121,11 @@ export class MyTestLogic{
         
         console.log(content[0]);
     }   
-    async performAction(layout: Layout){
-        const response = await layout.getService($MyTestService).GetName({
-            documentId:layout.cardInfo.id
+    async performAction(layout: Layout) {
+        const response = await layout.getService($MyTestService).GetTestData({
+            documentId: layout.cardInfo.id
         });
         
+        console.log(response.content);
     }
 }
