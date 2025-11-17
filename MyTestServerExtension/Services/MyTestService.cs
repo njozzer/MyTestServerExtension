@@ -1,6 +1,7 @@
 ﻿using DocsVision.BackOffice.CardLib.CardDefs;
 using DocsVision.BackOffice.ObjectModel;
 using DocsVision.BackOffice.ObjectModel.Services;
+using DocsVision.Platform.Data;
 using DocsVision.Platform.Data.Metadata.CardModel;
 using DocsVision.Platform.ObjectManager;
 using DocsVision.Platform.Utils.Maybe;
@@ -11,9 +12,12 @@ using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.CodeAnalysis.Operations;
 using MyTestServerExtension.Model;
 using System;
+using System.IO;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using static DocsVision.BackOffice.CardLib.CardDefs.RefKinds;
-using DocsVision.Platform.Data;
 namespace MyTestServerExtension.Services
 {
     
@@ -129,5 +133,45 @@ namespace MyTestServerExtension.Services
             
             return new MyTestModel { content = (string)getTrips.Execute()+"" };
         }
+
+        public MyTestModel GetTicketData(SessionContext sessionContext, Guid cardId, string dateFrom, string dateTo, Guid cityRef)
+        {
+            var origin = "LED";
+            var obj = sessionContext.ObjectContext.GetObject<BaseUniversalItem>(cityRef);
+            var destination = obj.ItemCard.MainInfo["cityCode"];
+            var token = "b165d8c4be5500d4da61df5067fd34ad";
+            var departure_at = dateFrom;
+            var return_at = dateTo;
+            var direct = "true";
+            var limit = "10";
+            using HttpClient client = new HttpClient();
+
+            string url = "https://api.travelpayouts.com/aviasales/v3/prices_for_dates?" +
+                "origin=" + origin + "&" +
+                "destination=" + destination + "&" +
+                "departure_at=" + departure_at + "&" +
+                "return_at=" + return_at + "&" +
+                "unique=false&" +
+                "sorting=price&" +
+                "direct=" + direct + "&" +
+                "currency=rub&" +
+                "limit=" + limit + "&" +
+                "page=1&" +
+                "one_way=true&" +
+                "token=" + token;
+
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            var responseBody = response.Content.ReadAsStream();
+            using (StreamReader reader = new StreamReader(responseBody, Encoding.UTF8))
+
+            {
+                string content = reader.ReadToEnd();
+                
+                var res = content;
+                return new MyTestModel { content = res };
+            }
+               
+        }
+        
     }
 }

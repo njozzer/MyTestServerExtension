@@ -1,4 +1,7 @@
-﻿using DocsVision.BackOffice.CardLib.CardDefs;
+﻿using System.IO;
+using System.Text;
+using System.Text.Json.Nodes;
+using DocsVision.BackOffice.CardLib.CardDefs;
 using DocsVision.BackOffice.ObjectModel;
 using DocsVision.BackOffice.ObjectModel.Services;
 using DocsVision.Platform.ObjectManager;
@@ -126,15 +129,15 @@ namespace IntroductionToSDK {
 			//Console.WriteLine(obj.ItemCard.MainInfo["daySalary"].ToString());
 		}
 		public static void mineLogic(UserSession session, ObjectContext context) {
-			Console.WriteLine($"Session: {session.Id}");
-			var docSvc = context.GetService<IDocumentService>();
+			//Console.WriteLine($"Session: {session.Id}");
+			/*var docSvc = context.GetService<IDocumentService>();
 			
 			var cardKindId = new Guid("{B118D1EA-E477-4150-ADB7-4720A2FBD6AE}");
 			var cardKind = context.GetObject<KindsCardKind>(cardKindId);
 
 			var citiesId = new Guid("{caef1c8d-e401-4efa-831e-aa30cc942c3e}");
 			var obj = context.GetObject<BaseUniversal>(citiesId);
-			
+			*/
 			/*
 			var id = new Guid("c4f4823e-345b-4f87-86a5-4beded1257d5");
 			var card = context.GetObject<Document>(id);
@@ -143,9 +146,9 @@ namespace IntroductionToSDK {
 			Console.WriteLine(cardKind.GetObjectId());
 			Console.WriteLine(card.SystemInfo.CardKind.GetObjectId());*/
 
-			for(int i = 0;i< 5; i++) {
+			/*for(int i = 0;i< 5; i++) {
 			createCard(session, context, cardKind,0);
-			}
+			}*/
 			//var docSvc = context.GetService<IDocumentService>();
 			/*var roleModelService = context.GetService<IRoleModelService>();
 			
@@ -156,11 +159,40 @@ namespace IntroductionToSDK {
 				Console.WriteLine(item.Status.ToString()=="Active");
 				Console.WriteLine(item.FullName);
 			}*/
+			var origin = "LED";
+			var destination = "MOW";
+			var token = "b165d8c4be5500d4da61df5067fd34ad";
+			var departure_at= "2025-11-19";
+			var return_at = "2025-11-25";
+			var direct = "true";
+			var limit = "10";
+			using HttpClient client = new HttpClient();
+			
+			string url = "https://api.travelpayouts.com/aviasales/v3/prices_for_dates?" +
+				"origin=" + origin + "&" +
+				"destination=" + destination + "&" +
+				"departure_at="+ departure_at +"&" +
+				"return_at="+ return_at +"&" +
+				"unique=false&" +
+				"sorting=price&" +
+				"direct="+direct+"&" +
+				"currency=rub&" +
+				"limit="+limit+"&" +
+				"page=1&" +
+				"one_way=true&" +
+				"token="+token;
 
+			HttpResponseMessage response = client.GetAsync(url).Result;
+			var responseBody = response.Content.ReadAsStream();
+			using(StreamReader reader = new StreamReader(responseBody, Encoding.UTF8))
 
+			{
+				string content = reader.ReadToEnd();
+				var js = JsonObject.Parse(content);
 
-
-
+				Console.WriteLine(js["data"][0]); // Output: Hello from MemoryStream!
+			}
+			
 			//Test(session, context);
 			//var document = context.GetObject<Document>(new Guid("6221a6cd-b4d7-49a2-af98-54415cb2e999"));
 			//Console.WriteLine(document.SystemInfo.State);

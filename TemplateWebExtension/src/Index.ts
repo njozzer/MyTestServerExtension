@@ -6,6 +6,7 @@ import { extensionManager } from "@docsvision/webclient/System/ExtensionManager"
 import { $RequestManager } from "@docsvision/webclient/System/$RequestManager";
 import { MyTestService } from "./Services/MyTestService";
 import {$MyTestService} from "./Services/interfaces/IMyTestService"
+import { GetTicketPricesControl } from "./Controls/GetTicketPricesControl";
 // Главная входная точка всего расширения
 // Данный файл должен импортировать прямо или косвенно все остальные файлы, 
 // чтобы rollup смог собрать их все в один бандл.
@@ -19,5 +20,7 @@ extensionManager.registerExtension({
     layoutServices:[
         Service.fromFactory($MyTestService, (services: $RequestManager) => new MyTestService(services)),
     ],
-    controls:[]
+    controls: [
+        { controlTypeName: "GetTicketsPrice", constructor: GetTicketPricesControl }
+    ]
 })

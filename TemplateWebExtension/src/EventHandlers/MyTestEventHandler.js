@@ -99,4 +99,12 @@ export function ddActivity_testButton_Onclick(sender) {
         });
     });
 }
+export function ddActivity_getTicketPrices_OnClick(sender) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            new MyTestLogic().getTicketPrices(sender.layout);
+            return [2 /*return*/];
+        });
+    });
+}
 //# sourceMappingURL=MyTestEventHandler.js.map

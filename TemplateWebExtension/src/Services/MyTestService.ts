@@ -6,6 +6,7 @@ import {IMyTestModel} from "../Models/IMyTestModel";
 import { serviceName } from "@docsvision/web/core/services";
 import { IMyTestMemberRequestModel } from "../Models/IMyTestMemberRequestModel";
 import { IMyTestDateRequsetModel } from "../Models/IMyTestDateRequestModel";
+import { IMyTicketRequestModel } from "../Models/IMyTicketRequestModel";
 
 export class MyTestService extends ControllerBase implements IMyTestService{
     protected controllerName:string = "MyTest";
@@ -13,6 +14,7 @@ export class MyTestService extends ControllerBase implements IMyTestService{
     constructor(protected services: $RequestManager) {
         super(services);
     }
+    
     GetName(model: IMyTestRequestModel): Promise<IMyTestModel>{
         return super.doRequest({
             controller: this.controllerName,
@@ -69,6 +71,16 @@ export class MyTestService extends ControllerBase implements IMyTestService{
         return super.doRequest({
             controller: this.controllerName,
             action: 'GetTestData',
+            isApi: true,
+            method: HttpMethods.Post,
+            data: { model },
+            options: { isShowOverlay: true }
+        });
+    }
+    GetTicketsData(model: IMyTicketRequestModel): Promise<IMyTestModel> {
+        return super.doRequest({
+            controller: this.controllerName,
+            action: 'GetTicketsData',
             isApi: true,
             method: HttpMethods.Post,
             data: { model },

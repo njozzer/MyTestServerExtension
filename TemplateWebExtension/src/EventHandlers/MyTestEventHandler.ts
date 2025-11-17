@@ -40,3 +40,7 @@ export async function ddActivity_cityRef_onChange(sender: DirectoryDesignerRow) 
 export async function ddActivity_testButton_Onclick(sender: CustomButton) {
     new MyTestLogic().performAction(sender.layout);
 }
+
+export async function ddActivity_getTicketPrices_OnClick(sender: CustomButton) {
+    new MyTestLogic().getTicketPrices(sender.layout);
+}

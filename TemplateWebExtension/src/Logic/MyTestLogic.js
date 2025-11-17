@@ -207,6 +207,28 @@ var MyTestLogic = /** @class */ (function () {
             });
         });
     };
+    MyTestLogic.prototype.getTicketPrices = function (layout) {
+        return __awaiter(this, void 0, void 0, function () {
+            var dateFrom, dateTo, cityRef, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        dateFrom = layout.controls.get("dateFrom");
+                        dateTo = layout.controls.get("dateTo");
+                        cityRef = layout.controls.get("cityRef");
+                        return [4 /*yield*/, layout.getService($MyTestService).GetTicketsData({
+                                documentId: layout.cardInfo.id,
+                                dateFrom: dateFrom.params.value.toISOString(),
+                                dateTo: dateTo.params.value.toISOString(),
+                                cityRef: cityRef.params.value.id
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     MyTestLogic.prototype.performAction = function (layout) {
         return __awaiter(this, void 0, void 0, function () {
             var response;

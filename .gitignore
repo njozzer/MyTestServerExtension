@@ -11,3 +11,5 @@ TemplateWebExtension/obj/*
 TemplateWebExtension/output/*
 DBTest/bin/*
 DBTest/obj/*
+MyLayout/bin/*
+MyLayout/obj/*

@@ -78,6 +78,13 @@ namespace MyTestServerExtension.Controllers
             return CommonResponse.CreateSuccess(res);
         }
 
-        
+        [HttpPost]
+        public CommonResponse<MyTestModel> GetTicketsData([FromBody] MyTicketRequestModel model)
+        {
+            var sessionContext = contextProvider.GetOrCreateCurrentSessionContext();
+            var res = testService.GetTicketData(sessionContext, model.DocumentId,model.DateFrom, model.DateFrom, model.CityRef);
+
+            return CommonResponse.CreateSuccess(res);
+        }
     }
 }

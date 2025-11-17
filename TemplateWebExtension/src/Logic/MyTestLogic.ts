@@ -120,7 +120,19 @@ export class MyTestLogic{
         var content = JSON.parse(response.content);
         
         console.log(content[0]);
-    }   
+    }
+    async getTicketPrices(layout: Layout) {
+        let dateFrom: DateTimePicker = layout.controls.get<DateTimePicker>("dateFrom");
+        let dateTo: DateTimePicker = layout.controls.get<DateTimePicker>("dateTo");
+        let cityRef: DirectoryDesignerRow = layout.controls.get<DirectoryDesignerRow>("cityRef");
+        
+        const response = await layout.getService($MyTestService).GetTicketsData({
+            documentId: layout.cardInfo.id,
+            dateFrom: dateFrom.params.value.toISOString(),
+            dateTo: dateTo.params.value.toISOString(),
+            cityRef: cityRef.params.value.id
+        });    
+    }
     async performAction(layout: Layout) {
         const response = await layout.getService($MyTestService).GetTestData({
             documentId: layout.cardInfo.id
